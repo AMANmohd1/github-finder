@@ -9,10 +9,10 @@ export const GithubProvider = ({children}) =>{
     
     const initialState = {
         users: [],
+        user: {},
         loading: false
     }
 
-    //const [state,dispatch] = useReducer(githubReducer,initialState)
     const [state, dispatch] = useReducer(githubReducer, initialState)
    
 
@@ -34,12 +34,37 @@ export const GithubProvider = ({children}) =>{
         })
     }
 
+    //<-------Single User------------>
+    const getUser = async (login) =>{
+        setLoading()
 
+        const response = await fetch(`${GITHUB_URL}/users/${login}`)
+
+        if(response.status === 404){
+            window.location = '/notfound'
+        }else{
+            const data = await response.json()
+
+            dispatch({
+                type: 'GET_USER',
+                payload: data
+            })
+        }
+
+        
+    }
+
+    //<----------Clear Users------->
+    const clearUsers = () =>dispatch({
+        type: 'CLEAR_USERS'
+    })
+
+    //<-------Set loading------->
     const setLoading = () => dispatch({
         type: 'SET_LOADING'
     })
 
-    return <GithubContext.Provider value={{users: state.users,loading: state.loading,searchUsers}}>
+    return <GithubContext.Provider value={{users: state.users,loading: state.loading,searchUsers,clearUsers,user:state.user,getUser}}>
         {children}
     </GithubContext.Provider>
 }
