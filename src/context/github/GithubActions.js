@@ -13,3 +13,34 @@ export const searchUsers = async (text) =>{
     
     return items
 }
+
+//<-------Single User------------>
+export const getUser = async (login) =>{
+
+    const response = await fetch(`${GITHUB_URL}/users/${login}`)
+
+    if(response.status === 404){
+        window.location = '/notfound'
+    }else{
+        const data = await response.json()
+
+        return data
+    }
+
+    
+}
+
+//<--------Get single user repos--------->
+export const getUserRepos = async (login) =>{
+
+    const params = new URLSearchParams({
+        sort: 'created',
+        per_page: 10
+    })
+
+    const response = await fetch(`${GITHUB_URL}/users/${login}/repos?${params}`)
+
+    const data = await response.json()
+    
+    return data
+}
