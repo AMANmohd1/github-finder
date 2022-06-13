@@ -1,12 +1,13 @@
 import {useState, useContext} from 'react'
 import GithubContext from '../../context/github/GithubContext'
 import AlertContext from '../../context/alert/AlertContext'
+import {searchUsers} from '../../context/github/GithubActions'
 
 function UserSearch() {
 
     const [text,setText] = useState('')
 
-    const {users, searchUsers,clearUsers} = useContext(GithubContext)
+    const {users,clearUsers,dispatch} = useContext(GithubContext)
 
     const {setAlert} =useContext(AlertContext)
 
@@ -14,12 +15,14 @@ function UserSearch() {
         setText(event.target.value)
     }
 
-    const handleSubmit = (event) =>{
+    const handleSubmit = async (event) =>{
         event.preventDefault()
         if(text === ''){
             setAlert("Field Cannot Be Empty",'error')
         }else{
-            searchUsers(text)
+            dispatch({type:'SET_LOADING'})
+            const users = await searchUsers(text)
+            dispatch({type: 'GET_USERS',payload: users})
             setText('')
         }
     }
